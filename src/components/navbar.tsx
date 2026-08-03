@@ -82,12 +82,16 @@ export const Navbar = () => {
 
                 {/* RIGHT — HIRE ME on desktop, hamburger on mobile */}
                 <div className="flex items-center gap-2 shrink-0 z-10">
-                    <a
-                        href="mailto:bethelCollins100@gmail.com"
-                        className="btn-brut text-[10px] px-4 py-2.5 uppercase tracking-widest hidden md:inline-flex"
-                    >
-                        Hire me
-                    </a>
+                    {/* Wrapper div hides/shows — btn-brut sets display:inline-flex which
+                        overrides Tailwind's `hidden` at the same CSS specificity level */}
+                    <div className="hidden md:block">
+                        <a
+                            href="mailto:bethelCollins100@gmail.com"
+                            className="btn-brut text-[10px] px-4 py-2.5 uppercase tracking-widest"
+                        >
+                            Hire me
+                        </a>
+                    </div>
                     <button
                         className="md:hidden w-9 h-9 border-2 border-ink flex items-center justify-center hover:bg-accent transition-colors duration-150"
                         onClick={() => setOpen(!open)}
