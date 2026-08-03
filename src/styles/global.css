@@ -1,22 +1,443 @@
 @import "tailwindcss";
 
 @theme {
-    --color-cyber-black: #050505;
-    --color-cyber-gray: #121212;
-    --color-cyber-emerald: #10b981;
-    --color-cyber-violet: #8b5cf6;
+    --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+    /* ── Light Brutalist defaults ── */
+    --color-surface:      #ffffff;
+    --color-surface-dim:  #f8f9fa;
+    --color-ink:          #0a0a0a;
+    --color-ink-muted:    #4a4a4a;
+    --color-ink-faint:    #888888;
+    --color-border:       #e0e0e0;
+    --color-green:        #00c853;
+    --color-accent:       #f0e620;
+    --color-accent-red:   #ff2d2d;
+    --color-accent-blue:  #1a1aff;
+    /* shadow tokens (separate for card glow vs button shadow) */
+    --color-shadow-card:  #0a0a0a;
+    --color-shadow-btn:   #0a0a0a;
+    /* on-accent: always dark text regardless of theme — ensures contrast on accent fills */
+    --color-on-accent:    #0a0a0a;
+    --color-on-green:     #0a0a0a;
 }
 
+/* ══════════════════════════════════════════════════════════
+   DARK BRUTALIST — Cyber obsidian; cyan glow + violet/orange
+   ══════════════════════════════════════════════════════════ */
+:root[data-theme="dark"] {
+    --color-surface:      #0d0d0e;
+    --color-surface-dim:  #141519;
+    --color-ink:          #f3f4f6;
+    --color-ink-muted:    #b0b8c8;
+    --color-ink-faint:    #4a5568;
+    --color-border:       #2a2a2e;
+    --color-green:        #00ff88;
+    --color-accent:       #7000ff;   /* Neon Violet — primary accent */
+    --color-accent-red:   #dd2200;   /* Deep Crimson-Orange — white text: 4.63:1 ✓ */
+    --color-accent-blue:  #1155ee;   /* Electric Blue — white text: 5.47:1 ✓ */
+    --color-shadow-card:  #7000ff;   /* violet hard glow on cards */
+    --color-shadow-btn:   #f3f4f6;   /* white shadow on dark bg */
+    /* white text on violet fills — violet is too dark for black text */
+    --color-on-accent:    #ffffff;
+    --color-on-green:     #0a0a0a;
+}
+
+/* ══════════════════════════════════════════════════════════
+   EARTH BRUTALIST — Warm linen; terracotta + ochre + forest
+   ══════════════════════════════════════════════════════════ */
+:root[data-theme="earth"] {
+    --color-surface:      #f5f0eb;
+    --color-surface-dim:  #efe8e0;
+    --color-ink:          #1a1816;
+    --color-ink-muted:    #5c4a3a;
+    --color-ink-faint:    #8a7060;
+    --color-border:       #c8b8a8;
+    --color-green:        #4e8b5f;   /* Sage Forest */
+    --color-accent:       #d9a05b;   /* Raw Ochre */
+    --color-accent-red:   #c84b31;   /* Burnt Terracotta */
+    --color-accent-blue:  #2d4263;   /* Deep Forest */
+    --color-shadow-card:  #1a1816;
+    --color-shadow-btn:   #1a1816;
+    --color-on-accent:    #1a1816;
+    --color-on-green:     #1a1816;
+}
+
+/* ── Base ── */
 @layer base {
     body {
-        @apply antialiased bg-cyber-black text-white min-h-screen font-sans;
+        @apply antialiased bg-surface text-ink;
+        font-family: var(--font-sans);
     }
 }
 
-.glass-panel {
-    @apply bg-cyber-gray/50 backdrop-blur-md border border-white/5;
+/* ── Smooth theme-change transitions (bg/color/border only) ── */
+*,
+*::before,
+*::after {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
 }
 
-.cyber-border {
-    @apply border border-white/10 hover:border-cyber-emerald/50 transition-colors duration-300;
+/* ══════════════════════════════════════════════════════════
+   BRUTALIST CARD
+   ══════════════════════════════════════════════════════════ */
+.card-brut {
+    border: 2px solid var(--color-ink);
+    box-shadow: 5px 5px 0 var(--color-shadow-card);
+    border-radius: 0;
+    transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 200ms ease,
+                border-color 200ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .card-brut:hover {
+        transform: translate(-3px, -3px);
+        box-shadow: 8px 8px 0 var(--color-shadow-card);
+    }
+}
+
+.card-brut:active {
+    transform: translate(5px, 5px);
+    box-shadow: 0 0 0 var(--color-shadow-card);
+}
+
+/* ── Earth: elastic spring on card ── */
+[data-theme="earth"] .card-brut {
+    transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 380ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                background-color 200ms ease,
+                border-color 200ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    [data-theme="earth"] .card-brut:hover {
+        transform: translate(-3px, -5px) rotate(-1deg);
+        box-shadow: 8px 10px 0 var(--color-shadow-card);
+    }
+}
+
+[data-theme="earth"] .card-brut:active {
+    transform: translate(5px, 5px) rotate(0.4deg);
+    box-shadow: 0 0 0 var(--color-shadow-card);
+    transition-duration: 80ms;
+}
+
+/* ══════════════════════════════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════════════════════════════ */
+.btn-brut {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    border: 2px solid var(--color-ink);
+    box-shadow: 4px 4px 0 var(--color-shadow-btn);
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform 110ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 110ms cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 200ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .btn-brut:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--color-shadow-btn);
+    }
+}
+
+.btn-brut:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 var(--color-shadow-btn);
+}
+
+/* Ghost button */
+.btn-ghost-brut {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: transparent;
+    color: var(--color-ink);
+    border: 2px solid var(--color-ink);
+    box-shadow: 4px 4px 0 var(--color-shadow-btn);
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform 110ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 110ms cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 110ms ease,
+                color 110ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .btn-ghost-brut:hover {
+        background: var(--color-ink);
+        color: var(--color-surface);
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--color-shadow-btn);
+    }
+}
+
+.btn-ghost-brut:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 var(--color-shadow-btn);
+    background: var(--color-ink);
+    color: var(--color-surface);
+}
+
+/* Red button */
+.btn-red-brut {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--color-accent-red);
+    color: #ffffff;
+    border: 2px solid var(--color-ink);
+    box-shadow: 4px 4px 0 var(--color-shadow-btn);
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform 110ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 110ms cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 200ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .btn-red-brut:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--color-shadow-btn);
+    }
+}
+
+.btn-red-brut:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 var(--color-shadow-btn);
+}
+
+/* Blue button */
+.btn-blue-brut {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--color-accent-blue);
+    color: #ffffff;
+    border: 2px solid var(--color-ink);
+    box-shadow: 4px 4px 0 var(--color-shadow-btn);
+    font-weight: 800;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform 110ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 110ms cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 200ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .btn-blue-brut:hover {
+        transform: translate(-2px, -2px);
+        box-shadow: 6px 6px 0 var(--color-shadow-btn);
+    }
+}
+
+.btn-blue-brut:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 var(--color-shadow-btn);
+}
+
+/* ── Earth: elastic spring on all buttons ── */
+[data-theme="earth"] .btn-brut,
+[data-theme="earth"] .btn-ghost-brut,
+[data-theme="earth"] .btn-red-brut,
+[data-theme="earth"] .btn-blue-brut {
+    transition: transform 380ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 380ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                background-color 200ms ease,
+                color 200ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    [data-theme="earth"] .btn-brut:hover,
+    [data-theme="earth"] .btn-ghost-brut:hover,
+    [data-theme="earth"] .btn-red-brut:hover,
+    [data-theme="earth"] .btn-blue-brut:hover {
+        transform: translate(-3px, -4px);
+        box-shadow: 7px 7px 0 var(--color-shadow-btn);
+    }
+}
+
+[data-theme="earth"] .btn-brut:active,
+[data-theme="earth"] .btn-ghost-brut:active,
+[data-theme="earth"] .btn-red-brut:active,
+[data-theme="earth"] .btn-blue-brut:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0 0 0 var(--color-shadow-btn);
+    transition-duration: 80ms;
+}
+
+/* ══════════════════════════════════════════════════════════
+   EARTH FLOAT ANIMATION
+   Applies to wrapper divs; inner .card-brut hover stays clean
+   ══════════════════════════════════════════════════════════ */
+@keyframes earth-float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-6px); }
+}
+
+[data-theme="earth"] .earth-float {
+    animation: earth-float 3s ease-in-out infinite;
+}
+
+/* ══════════════════════════════════════════════════════════
+   MARQUEE
+   translate3d forces GPU compositing on iOS Safari / Android.
+   -webkit- prefix ensures older WebKit engines animate correctly.
+   ══════════════════════════════════════════════════════════ */
+@-webkit-keyframes marquee {
+    from { -webkit-transform: translate3d(0, 0, 0); transform: translate3d(0, 0, 0); }
+    to   { -webkit-transform: translate3d(-50%, 0, 0); transform: translate3d(-50%, 0, 0); }
+}
+@keyframes marquee {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-50%, 0, 0); }
+}
+
+.marquee-track {
+    display: flex;
+    /* !important beats the prefers-reduced-motion * { animation-duration: 0.01ms !important } rule
+       because class specificity > * specificity even when both carry !important */
+    -webkit-animation: marquee 28s linear infinite !important;
+    animation: marquee 28s linear infinite !important;
+    will-change: transform;
+    width: max-content;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transition: none;
+}
+
+.marquee-track:hover {
+    /* needs !important because the base rule locks animation via !important shorthand;
+       class+pseudo-class specificity > plain class, so this wins cleanly */
+    -webkit-animation-play-state: paused !important;
+    animation-play-state: paused !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CONTRAST UTILITIES
+   Always-dark text for bright accent/green fills —
+   prevents white-on-cyan (dark mode) or white-on-neon issues
+   ══════════════════════════════════════════════════════════ */
+.text-on-accent { color: var(--color-on-accent); }
+.text-on-green  { color: var(--color-on-green);  }
+
+/* ══════════════════════════════════════════════════════════
+   BADGE PING — theme-specific radar indicators
+   Structure:  <span class="relative flex h-2 w-2">
+                 <span class="badge-ping-ring"/>
+                 <span class="badge-ping-dot"/>
+               </span>
+   ══════════════════════════════════════════════════════════ */
+.badge-ping-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background-color: var(--color-green);
+    opacity: 0.75;
+    animation: badge-radar 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.badge-ping-dot {
+    position: relative;
+    display: inline-flex;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--color-green);
+}
+
+@keyframes badge-radar {
+    75%, 100% { transform: scale(2.4); opacity: 0; }
+}
+
+/* Dark — cyber beacon (violet, glowing ring) */
+[data-theme="dark"] .badge-ping-ring,
+[data-theme="dark"] .badge-ping-dot {
+    background-color: var(--color-accent);  /* violet */
+}
+[data-theme="dark"] .badge-ping-ring {
+    animation: badge-cyber 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    filter: drop-shadow(0 0 4px #7000ff);
+}
+
+@keyframes badge-cyber {
+    0%         { transform: scale(1);   opacity: 0.8; }
+    60%, 100%  { transform: scale(2.8); opacity: 0;   }
+}
+
+/* Earth — terracotta warm pulse */
+[data-theme="earth"] .badge-ping-ring,
+[data-theme="earth"] .badge-ping-dot {
+    background-color: var(--color-accent-red);  /* terracotta */
+}
+[data-theme="earth"] .badge-ping-ring {
+    animation: badge-earth 2s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+}
+
+@keyframes badge-earth {
+    0%        { transform: scale(1);   opacity: 0.7; }
+    55%, 100% { transform: scale(2.2); opacity: 0;   }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DARK THEME — cyber glow hover effects
+   Only transform + opacity properties are animated (GPU).
+   box-shadow is a non-composited property so we pair it with
+   transform so it only triggers on hover, not on every frame.
+   ══════════════════════════════════════════════════════════ */
+
+/* Card violet glow on hover */
+@media (hover: hover) and (pointer: fine) {
+    [data-theme="dark"] .card-brut:hover {
+        box-shadow: 8px 8px 0 #7000ff, 0 0 24px #7000ff33;
+    }
+}
+
+/* Focus-visible: violet glow ring on all interactive elements */
+[data-theme="dark"] .btn-brut:focus-visible,
+[data-theme="dark"] .btn-ghost-brut:focus-visible,
+[data-theme="dark"] .btn-red-brut:focus-visible,
+[data-theme="dark"] .btn-blue-brut:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    box-shadow: 0 0 10px #7000ff55;
+}
+
+/* ══════════════════════════════════════════════════════════
+   SKILL BADGE — reactive hover rotation (light only, touch-safe)
+   Emil rule: gate hover transforms behind pointer media query
+   ══════════════════════════════════════════════════════════ */
+@media (hover: hover) and (pointer: fine) {
+    [data-theme="light"] .skill-tag:hover {
+        transform: rotate(-1.5deg) translateY(-2px);
+        transition: transform 140ms cubic-bezier(0.23, 1, 0.32, 1);
+    }
+}
+
+/* ══════════════════════════════════════════════════════════
+   PREFERS-REDUCED-MOTION
+   Keep opacity/color transitions (they aid comprehension).
+   Strip all movement: marquee, float, badge ping, keyframes.
+   ══════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+    /* marquee intentionally excluded — portfolio author wants it running always */
+    .earth-float            { animation: none; }
+    .badge-ping-ring        { animation: none; opacity: 0.6; transform: none; }
+    *,
+    *::before,
+    *::after                { animation-duration: 0.01ms !important;
+                              transition-duration: 0.01ms !important; }
 }

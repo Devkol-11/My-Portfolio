@@ -1,76 +1,134 @@
 import { motion } from 'framer-motion';
-import { Cpu, Server, Database, Cloud } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
+import { AWSIcon } from './TechIcons';
 
-const skillGroups = [
+/* ── Category grid ── */
+const categories = [
     {
-        title: "Frameworks & Runtimes",
-        icon: <Cpu size={18} />,
-        skills: ["Node.js", "Express", "Fastify", "NestJS", "TypeScript"],
-        status: "DEPLOYED"
+        name: 'LANGUAGES',
+        items: ['Go', 'C', 'TypeScript', 'JavaScript', 'Python', 'SQL', 'HTML / CSS'],
+        tagClass: 'skill-tag text-sm font-bold border-2 border-ink px-3 py-1 hover:bg-accent hover:text-on-accent hover:border-ink transition-colors duration-100 cursor-default text-ink',
+        labelClass: 'text-[10px] font-mono font-black uppercase tracking-[0.18em] text-ink-faint mb-4',
     },
     {
-        title: "Architecture & Design",
-        icon: <Server size={18} />,
-        skills: ["Clean Architecture", "Hexagonal Architecture", "DDD", "Microservices", "REST API"],
-        status: "DEPLOYED"
+        name: 'BACKEND',
+        items: ['Go / Fiber', 'gRPC', 'Node.js', 'NestJS', 'Express', 'Fastify'],
+        tagClass: 'text-sm font-bold border-2 border-accent-red bg-accent-red text-white px-3 py-1 cursor-default',
+        labelClass: 'text-[10px] font-mono font-black uppercase tracking-[0.18em] text-accent-red mb-4',
     },
     {
-        title: "Data Persistence",
-        icon: <Database size={18} />,
-        skills: ["PostgreSQL", "MongoDB", "Redis", "Elasticsearch", "Prisma/TypeORM"],
-        status: "DEPLOYED"
+        name: 'FRONTEND',
+        items: ['React', 'Next.js', 'Tailwind CSS', 'Vite', 'Framer Motion'],
+        tagClass: 'text-sm font-bold border-2 border-accent-blue bg-accent-blue text-white px-3 py-1 cursor-default',
+        labelClass: 'text-[10px] font-mono font-black uppercase tracking-[0.18em] text-accent-blue mb-4',
     },
     {
-        title: "Infrastructure & Ops",
-        icon: <Cloud size={18} />,
-        skills: ["Docker", "Kubernetes", "AWS", "RabbitMQ", "BullMQ", "CI/CD"],
-        status: "DEPLOYED"
-    }
+        name: 'DATABASES',
+        items: ['PostgreSQL', 'Redis', 'MongoDB', 'Elasticsearch', 'Supabase'],
+        tagClass: 'text-sm font-bold border-2 border-green bg-green text-on-green px-3 py-1 cursor-default',
+        labelClass: 'text-[10px] font-mono font-black uppercase tracking-[0.18em] text-green mb-4',
+    },
+    {
+        name: 'CLOUD & OPS',
+        items: ['Docker', 'AWS', 'Kubernetes', 'CI / CD', 'Vercel'],
+        tagClass: 'text-sm font-bold border-2 border-ink bg-accent text-on-accent px-3 py-1 cursor-default',
+        labelClass: 'text-[10px] font-mono font-black uppercase tracking-[0.18em] text-ink-faint mb-4',
+    },
+    {
+        name: 'TOOLS',
+        items: ['Git', 'Linux / POSIX', 'Jest', 'Vitest', 'Swagger', 'ESLint'],
+        tagClass: 'text-sm font-bold border-2 border-ink px-3 py-1 hover:bg-surface-dim transition-colors duration-100 cursor-default text-ink',
+        labelClass: 'text-[10px] font-mono font-black uppercase tracking-[0.18em] text-ink-faint mb-4',
+    },
 ];
 
-export const Skills = () => {
+/* ── Marquee items — Go first; AWS uses inline SVG ── */
+type MarqueeItem = { name: string; slug: string; custom?: true };
+
+const marqueeItems: MarqueeItem[] = [
+    { name: 'Go',         slug: 'go'              },
+    { name: 'TypeScript', slug: 'typescript'      },
+    { name: 'React',      slug: 'react'           },
+    { name: 'Node.js',    slug: 'nodedotjs'       },
+    { name: 'Next.js',    slug: 'nextdotjs'       },
+    { name: 'PostgreSQL', slug: 'postgresql'      },
+    { name: 'Redis',      slug: 'redis'           },
+    { name: 'Docker',     slug: 'docker'          },
+    { name: 'Tailwind',   slug: 'tailwindcss'     },
+    { name: 'AWS',        slug: 'aws', custom: true },
+    { name: 'Vercel',     slug: 'vercel'          },
+    { name: 'Git',        slug: 'git'             },
+    { name: 'MongoDB',    slug: 'mongodb'         },
+];
+
+const doubled = [...marqueeItems, ...marqueeItems];
+
+export const TechStack = () => {
+    const { theme } = useTheme();
+    const iconColor = theme === 'dark' ? 'f0f0f0' : theme === 'earth' ? '1a1208' : '0a0a0a';
+
     return (
-        <section className="max-w-5xl mx-auto py-20 px-6">
-            <div className="flex items-center gap-2 mb-12">
-                <span className="w-2 h-8 bg-cyber-emerald rounded-sm"></span>
-                <h2 className="text-2xl font-bold text-white tracking-tight">Skills & Tools</h2>
+        <section id="skills" className="py-24 border-t-2 border-ink bg-surface-dim">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6">
+                <p className="text-[10px] font-mono font-black uppercase tracking-[0.2em] text-ink-faint mb-3">
+                    02 / THE TOOLKIT
+                </p>
+                <h2 className="text-3xl md:text-4xl font-black text-ink tracking-tight mb-12">
+                    Stack of choice.
+                </h2>
+
+                {/* Brutalist grid — ink gaps between cells */}
+                <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.15 }}
+                    transition={{ type: 'spring', stiffness: 220, damping: 28 }}
+                    className="border-2 border-ink overflow-hidden"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-3 bg-ink gap-[2px]">
+                        {categories.map(({ name, items, tagClass, labelClass }) => (
+                            <div key={name} className="bg-surface p-6">
+                                <p className={labelClass}>{name}</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {items.map((item) => (
+                                        <span key={item} className={tagClass} style={{ borderRadius: '2px' }}>
+                                            {item}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {skillGroups.map((group, index) => (
-                    <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -20 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.1 }}
-                        className="glass-panel text-white p-6 rounded-xl hover:bg-white/5 transition-colors group"
-                    >
-                        <div className="flex justify-between items-start mb-6">
-                            <div className="flex items-center gap-3 text-cyber-emerald">
-                                <div className="p-2 bg-cyber-emerald/10 rounded-lg">
-                                    {group.icon}
-                                </div>
-                                <h3 className="font-mono font-bold">{group.title}</h3>
-                            </div>
-                            <div className="flex items-center gap-2 text-[10px] font-mono font-bold tracking-widest text-cyber-emerald/70 bg-cyber-emerald/5 px-2 py-1 rounded border border-cyber-emerald/20">
-                                <div className="w-1.5 h-1.5 rounded-full bg-cyber-emerald animate-pulse"></div>
-                                {group.status}
-                            </div>
+            {/* Marquee */}
+            <div className="mt-14 overflow-hidden border-t-2 border-b-2 border-ink py-4 bg-surface">
+                <div className="flex marquee-track">
+                    {doubled.map(({ name, slug, custom }, i) => (
+                        <div key={`${slug}-${i}`} className="flex items-center gap-2.5 mx-8 shrink-0">
+                            {custom && name === 'AWS' ? (
+                                <AWSIcon
+                                    color={`#${iconColor}`}
+                                    width={18}
+                                    height={18}
+                                />
+                            ) : (
+                                <img
+                                    src={`https://cdn.simpleicons.org/${slug}/${iconColor}`}
+                                    alt={name}
+                                    width={18}
+                                    height={18}
+                                    loading="lazy"
+                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                />
+                            )}
+                            <span className="text-sm font-black text-ink whitespace-nowrap uppercase tracking-widest">
+                                {name}
+                            </span>
                         </div>
-
-                        <div className="flex flex-wrap gap-2">
-                            {group.skills.map((skill, i) => (
-                                <span
-                                    key={i}
-                                    className="text-sm text-slate-300 bg-white/5 px-3 py-1.5 rounded-md border border-white/5 hover:border-cyber-emerald/30 hover:text-white transition-all cursor-crosshair"
-                                >
-                                    {skill}
-                                </span>
-                            ))}
-                        </div>
-                    </motion.div>
-                ))}
+                    ))}
+                </div>
             </div>
         </section>
     );
